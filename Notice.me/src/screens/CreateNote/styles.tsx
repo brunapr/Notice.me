@@ -86,7 +86,7 @@ export const Name = styled.Text `
 `;
 
 export const Folders = styled.View `
-    padding: 10px 10px;
+    padding: 10px 10px 0px 10px;
     width: ${wp('70%')}px;
     height: ${hp('32%')}px;
     background-color: #151515;
@@ -101,4 +101,13 @@ export const RadioGroup = styled.View `
     align-items: center;
     width: 100%;
     margin-bottom: 10px;
+`;
+
+export const NameInput = styled.TextInput.attrs({
+    placeholderTextColor: "#F2F2F2",
+  }) `
+    font-family: MontMedium;
+    color: #F2F2F2;
+    font-size: ${wp('2.5%')}px;
+    flex: 1;
 `;

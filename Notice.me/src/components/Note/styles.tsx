@@ -36,7 +36,7 @@ export const Bottom = styled.View `
 `;
 
 export const Tag = styled.View `
-    padding: 5px 10px 0px 10px;
+    padding: 0px 8px;
     border-radius: 5px;
     max-width: 50%;
 
@@ -54,6 +54,11 @@ export const Name = styled.Text `
     color: #F2F2F2;
     font-size: ${wp('1.8%')}px;
     flex: 1;
+    line-height: 20px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 export const Buttons = styled.View `

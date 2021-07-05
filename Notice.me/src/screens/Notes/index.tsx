@@ -15,6 +15,7 @@ import { Header, Folders, UserNotes, Column, NoNotes, NoNotesText } from './styl
 import Toast from '../../components/Toast';
 import DeleteNote from '../../components/DeleteNote';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import EditNote from '../EditNote';
 
 interface Notes {
     id: number,
@@ -33,9 +34,11 @@ export default function Notes() {
 
     const Auth = useContext(AuthContext);
     const list = Auth.notes;
+    // console.log(Auth.tags)
 
     const [ userName, setUserName ] = useState(Auth.name);
 
+    const [ favList, setFavList ] = useState<Notes[]>([]);
     const [ leftCol, setLeftCol ] = useState<Notes[]>([]);
     const [ rightCol, setRightCol ] = useState<Notes[]>([]);
     
@@ -52,17 +55,22 @@ export default function Notes() {
 
     const [ loading, setLoading ] = useState(true);
     const [ visible, setVisible ] = useState(false);
+    const [ editMode, setEditMode ] = useState(false);
 
     useEffect(() => {
         setTagsList(Auth.tags);
         divide(list);
-    }, [Auth.notes, Auth.tags, visible, deleteNote])
+    }, [Auth.notes, Auth.tags, visible, deleteNote, editMode])
 
     useEffect(() => {
         setTimeout(() => {
             setToast(false)
         }, 3000)
     }, [toast])
+
+    useEffect(() => {
+        favoriteList(list);
+    }, [leftCol, rightCol])
     
     function divide(list: any) {
         let isReversed = false;
@@ -93,12 +101,24 @@ export default function Notes() {
         if(id == -3) {
             setCurrentFolder(id)
             divide(Auth.notes)
-        } else {
+        } else if(id == -2) {
             setCurrentFolder(id)
-            setLeftCol([]); 
-            setRightCol([]);
+            divide(favList)
         }
     } 
+
+    function favoriteList(list: any) {
+        const fav:Notes[] = [];
+        if(leftCol == []) { setFavList([]) }
+        else {
+            for(let i=0; i<list.length; i++) {
+                if(list[i].status == '1') {
+                    fav.push(list[i])
+                }
+            }
+        }
+        return setFavList(fav)
+    }
 
     return (
         <Container>
@@ -108,20 +128,16 @@ export default function Notes() {
             <Folders>
                 <FolderList
                     id={-3}
-                    name='book-outline'
+                    name='file-tray-outline'
+                    title='All'
                     onPress={() => { handleChangeFolder(-3) }}
                     currentFolder={currentFolder}
                 />
                 <FolderList
                     id={-2}
                     name='heart-outline'
+                    title='Favorites'
                     onPress={() => { handleChangeFolder(-2) }}
-                    currentFolder={currentFolder}
-                />
-                <FolderList
-                    id={-1}
-                    name='trash-outline'
-                    onPress={() => { handleChangeFolder(-1) }}
                     currentFolder={currentFolder}
                 />
             </Folders>
@@ -150,7 +166,7 @@ export default function Notes() {
                                             status={note.status}
                                             delete={setDeleteNote}
                                             setId={setNoteId}
-
+                                            edit={setEditMode}
                                         />
                                     );
                                 })}
@@ -167,6 +183,7 @@ export default function Notes() {
                                             status={note.status}
                                             delete={setDeleteNote}
                                             setId={setNoteId}
+                                            edit={setEditMode}
                                         />
                                     );
                                 })}
@@ -186,20 +203,32 @@ export default function Notes() {
                 : <NewNote onPress={() => setVisible(true)}/>
             }
             {
+                editMode && 
+                <EditNote 
+                    close={setEditMode} 
+                    tags={tagsList} 
+                    noteId={noteId}
+                    setAlertType={setAlertType} 
+                    setAlert={setAlert}
+                    setToastType={setToastType}
+                    setToast={setToast}
+                />
+            }
+            {
+                deleteNote && <DeleteNote 
+                close={setDeleteNote} 
+                id={noteId} 
+                list={list} 
+                setToastType={setToastType} 
+                setToast={setToast}/>
+            }
+            {
                 alert && <Alert close={setAlert} type={alertType}/>
             }
             {
                 toast && <Toast close={setToast} type={toastType}/>
             }
-            {
-                deleteNote && <DeleteNote 
-                    close={setDeleteNote} 
-                    id={noteId} 
-                    list={list} 
-                    setToastType={setToastType} 
-                    setToast={setToast}/>
-            }
-            {/* <Button title="oi" onPress={() => AsyncStorage.setItem("notes", "[]")}/> */}
+            {/* <Button title="delete all notes" onPress={() => AsyncStorage.setItem("notes", "[]")}/> */}
         </Container>
     );
 }

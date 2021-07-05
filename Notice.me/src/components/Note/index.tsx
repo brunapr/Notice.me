@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { NoteContainer, Title, Description, Bottom, Tag, Name, Buttons } from './styles';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -7,17 +7,23 @@ export default function Note(props:any) {
 
     let tag = props.tag;
     let status = props.status;
+    let id = props.id;
 
     return(
-        <NoteContainer onPress={() => alert('Cannot edit note yet. Long Press to delete.')} onLongPress={() => { props.setId(props.id); props.delete(true) }}>
-            { props.title != "" &&
-                <Title>{props.title}</Title>
+        <NoteContainer 
+            onPress={() => { props.setId(id); props.edit(true) }} 
+            onLongPress={() => { props.setId(id); props.delete(true) }}>
+            { 
+                props.title != "" &&
+                    <Title>{props.title}</Title>
             }
-            { props.title != "" && props.description != "" &&
-                <View style={{marginBottom: 12}}/>
+            { 
+                props.title != "" && props.description != "" &&
+                    <View style={{marginBottom: 12}}/>
             }
-            { props.description != "" &&
-                <Description numberOfLines={7}>{props.description}</Description>
+            {   
+                props.description != "" &&
+                    <Description numberOfLines={7}>{props.description}</Description>
             }
             <Bottom>
                 <Buttons>

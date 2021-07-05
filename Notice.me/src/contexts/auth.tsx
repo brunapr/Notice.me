@@ -51,8 +51,7 @@ const AuthProvider = (props:any) => {
         try {
             const userTags = await AsyncStorage.getItem("tags");
             if( userTags !== null ) {
-                JSON.parse(userTags)
-                return tags;
+                tags = JSON.parse(userTags);
             }
         } catch (e) { console.log('Error.') }
         return tags;

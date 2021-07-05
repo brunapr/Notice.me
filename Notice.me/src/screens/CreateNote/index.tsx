@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView } from 'react-native';
+import { ScrollView, TouchableOpacity, Text } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 import { AuthContext } from '../../contexts/auth';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import { Buttons } from '../../components/Note/styles';
-import { Black, Title, NoteContainer, Description, Header, Tag, Name, Bottom, Folders, RadioGroup } from './styles';
+import { Black, Title, NoteContainer, Description, Header, Tag, Name, Bottom, Folders, RadioGroup, NameInput } from './styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Note {
@@ -28,16 +28,15 @@ export default function CreateNote(props:any) {
     const Auth = useContext(AuthContext);
 
     let notesList = Auth.notes;
-    const tags:Tag[] = props.tags;
-
-    console.log(notesList)
-    console.log(Auth.notes.length)
+    const tags:Tag[] = Auth.tags;
+    // alert(tags[0].name)
     
     const [ favorite, setFavorite ] = useState('0');
     const [ checked, setChecked ] = useState("No tag");
     const [ choosingTag, setChoosingTag ] = useState(false);
     
     const { control, getValues, handleSubmit, formState: { errors } } = useForm({ mode: 'onTouched' });
+    const onError = (errors: Object) => { console.log(errors) };
 
     const onSubmit = (data: Note) => {
         let isReversed = false;
@@ -59,6 +58,8 @@ export default function CreateNote(props:any) {
                 last_id = notesList[length-1].id; 
             } else { last_id = 0 };
 
+            thisTagExists(checked, data);
+
             const NewNote = {
                 id: last_id+1,
                 title: data.title,
@@ -77,7 +78,40 @@ export default function CreateNote(props:any) {
         }
     };
 
-    const onError = (errors: Object) => { console.log(errors) };
+    function thisTagExists(tag:string, data:object) {
+        let exists = false;
+        const length = tags.length;
+
+        for(let i = 0; i < tags.length; i++) {
+            if(tags[i].name == tag) {
+                exists = true;
+            }
+        }
+
+        let last_id:number;
+        if (exists != true && length != 0 && tag != "No tag") {
+            last_id = tags[length - 1].id;
+            const NewTag = {
+                id: last_id+1,
+                name: tag,
+            }
+            tags.push(NewTag);
+            Auth.setTags(tags);
+            const tagList = JSON.stringify(Auth.tags);
+            AsyncStorage.setItem("tags", tagList)
+
+        } else if (exists != true && length == 0 && tag != "No tag") {
+            last_id = 0;
+            const NewTag = {
+                id: last_id+1,
+                name: tag,
+            }
+            tags.push(NewTag);
+            Auth.setTags(tags);
+            const tagList = JSON.stringify(Auth.tags);
+            AsyncStorage.setItem("tags", tagList)
+        }
+    }
 
     function handleSelectTag(name:string) {
         setChecked(name);
@@ -91,7 +125,7 @@ export default function CreateNote(props:any) {
                     name="close" 
                     size={48} 
                     color="#FFCD92" 
-                    onPress={() => {props.close(false) }} //alert leave wout save after
+                    onPress={() => {props.close(false) }}
                 />
                 <Icon 
                     name='save'
@@ -161,32 +195,53 @@ export default function CreateNote(props:any) {
             {
                 choosingTag &&
                 <Folders>
-                    <RadioGroup>
-                        <RadioButton
-                            value="No tag"
-                            color= '#FFCD92'
-                            uncheckedColor= '#99A3D266'
-                            status={ checked === "No tag" ? 'checked' : 'unchecked' }
-                            onPress={() => {setChecked("No tag"); setChoosingTag(!choosingTag)}}
+                    <ScrollView>
+                        <RadioGroup>
+                            <RadioButton
+                                value="No tag"
+                                color= '#FFCD92'
+                                uncheckedColor= '#99A3D266'
+                                status={ checked === "No tag" ? 'checked' : 'unchecked' }
+                                onPress={() => {setChecked("No tag"); setChoosingTag(!choosingTag)}}
+                            />
+                            <Name>No tag</Name>
+                        </RadioGroup>
+                        {
+                            tags != [] &&
+                            tags.map( tag => {
+                                return(
+                                    <RadioGroup key={tag.id}>
+                                        <RadioButton
+                                            value={tag.name}
+                                            color= '#FFCD92'
+                                            uncheckedColor= '#99A3D266'
+                                            status={ checked === tag.name ? 'checked' : 'unchecked' }
+                                            onPress={() => {handleSelectTag(tag.name);}}
+                                        />
+                                        <Name>{tag.name}</Name>
+                                    </RadioGroup>
+                                );
+                            })
+                        }
+                    </ScrollView>
+                    <RadioGroup style={{alignSelf: 'flex-end', borderTopWidth: 1, borderTopColor: '#f2f2f218'}}>
+                        <Icon name="md-add" size={36} color="#F2F2F2" />
+                        <Controller 
+                            control={control}
+                            render={({ field: { onBlur, onChange, value } }) => (
+                                <NameInput
+                                    placeholder="NEW TAG"
+                                    maxLength={10}
+                                    onBlur={onBlur}
+                                    onSubmitEditing={() => {setChoosingTag(false)}}
+                                    onChangeText={(value:any) => {setChecked(value); onChange(value)}}
+                                    value={value}
+                                />
+                            )}
+                            name='tag'
+                            defaultValue=''
                         />
-                        <Name>No tag</Name>
                     </RadioGroup>
-                    {
-                        tags.map( tag => {
-                            return(
-                                <RadioGroup key={tag.id}>
-                                    <RadioButton
-                                        value={tag.name}
-                                        color= '#FFCD92'
-                                        uncheckedColor= '#99A3D266'
-                                        status={ checked === tag.name ? 'checked' : 'unchecked' }
-                                        onPress={() => {handleSelectTag(tag.name);}}
-                                    />
-                                    <Name>{tag.name}</Name>
-                                </RadioGroup>
-                            );
-                        })
-                    }
                 </Folders>
             }
         </Black>

@@ -17,7 +17,7 @@ export const Header = styled.View `
 `;
 
 export const Message = styled.Text `
-    font-size: ${wp('3.5%')}px;
+    font-size: ${wp('3%')}px;
     color: #f2f2f28d;
     font-family: Karla;
 `;
@@ -42,6 +42,6 @@ export const Uppercase = styled.Text `
     color: #FFCD92;
     text-transform: uppercase;
     letter-spacing: 2px;
-    font-size: ${wp('4%')}px;
+    font-size: ${wp('3.5%')}px;
     font-family: MontMedium;
 `;
