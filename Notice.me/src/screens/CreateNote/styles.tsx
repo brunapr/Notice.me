@@ -13,6 +13,7 @@ export const Black = styled.View `
 
 export const Header = styled.View `
     width: ${wp('70%')}px;
+    height: ${hp('7%')}px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     background-color: #151515;
@@ -28,6 +29,7 @@ export const Header = styled.View `
 
 export const NoteContainer = styled.View `
     width: ${wp('70%')}px;
+    height: ${hp('35%')}px;
     background-color: #1F1E2B;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
@@ -54,8 +56,7 @@ export const Description = styled.TextInput.attrs({
 export const Bottom = styled.View `
     width: ${wp('70%')}px;
     position: absolute;
-    padding: 0px 12px 0px 12px;
-    bottom: -12px;
+    padding: 0px 20px 0px 20px;
 
     display: flex;
     flex-direction: row;
@@ -88,7 +89,7 @@ export const Name = styled.Text `
 export const Folders = styled.View `
     padding: 10px 10px 0px 10px;
     width: ${wp('70%')}px;
-    height: ${hp('32%')}px;
+    height: ${hp('45%')}px;
     background-color: #151515;
     border-radius: 10px;
     position: absolute;

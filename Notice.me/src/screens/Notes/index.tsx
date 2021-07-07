@@ -34,22 +34,24 @@ export default function Notes() {
 
     const Auth = useContext(AuthContext);
     const list = Auth.notes;
-    // console.log(Auth.tags)
+    const userName = Auth.name;
 
-    const [ userName, setUserName ] = useState(Auth.name);
-
+    // favorited list and left/right notes' column
     const [ favList, setFavList ] = useState<Notes[]>([]);
     const [ leftCol, setLeftCol ] = useState<Notes[]>([]);
     const [ rightCol, setRightCol ] = useState<Notes[]>([]);
     
     const [ tagsList, setTagsList ] = useState<Tags[]>([]);
     
+    // show current clicked folder to change folder style
     const [ currentFolder, setCurrentFolder ] = useState(-3);
 
+    const [ noteId, setNoteId ] = useState(0);
     const [ alert, setAlert ] = useState(false);
     const [ toast, setToast ] = useState(false);
     const [ deleteNote, setDeleteNote ] = useState(false);
-    const [ noteId, setNoteId ] = useState(0);
+
+    // help set what message alert and toast should give
     const [ alertType, setAlertType ] = useState(0);
     const [ toastType, setToastType ] = useState(0);
 

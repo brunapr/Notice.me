@@ -28,11 +28,11 @@ export default function CreateNote(props:any) {
     const Auth = useContext(AuthContext);
 
     let notesList = Auth.notes;
-    const tags:Tag[] = Auth.tags;
-    // alert(tags[0].name)
     
+    const [ tags, setTags ] = useState<Tag[]>(Auth.tags);
     const [ favorite, setFavorite ] = useState('0');
     const [ checked, setChecked ] = useState("No tag");
+    const [ deleted, setDeleted ] = useState(false);
     const [ choosingTag, setChoosingTag ] = useState(false);
     
     const { control, getValues, handleSubmit, formState: { errors } } = useForm({ mode: 'onTouched' });
@@ -83,18 +83,20 @@ export default function CreateNote(props:any) {
         const length = tags.length;
 
         for(let i = 0; i < tags.length; i++) {
-            if(tags[i].name == tag) {
+            if(tags[i].name.toUpperCase() === tag.toUpperCase()) {
                 exists = true;
             }
         }
-
+        
         let last_id:number;
         if (exists != true && length != 0 && tag != "No tag") {
             last_id = tags[length - 1].id;
-            const NewTag = {
+
+            let NewTag = {
                 id: last_id+1,
                 name: tag,
             }
+    
             tags.push(NewTag);
             Auth.setTags(tags);
             const tagList = JSON.stringify(Auth.tags);
@@ -102,10 +104,12 @@ export default function CreateNote(props:any) {
 
         } else if (exists != true && length == 0 && tag != "No tag") {
             last_id = 0;
-            const NewTag = {
+
+            let NewTag = {
                 id: last_id+1,
                 name: tag,
             }
+    
             tags.push(NewTag);
             Auth.setTags(tags);
             const tagList = JSON.stringify(Auth.tags);
@@ -113,10 +117,26 @@ export default function CreateNote(props:any) {
         }
     }
 
-    function handleSelectTag(name:string) {
-        setChecked(name);
-        setChoosingTag(!choosingTag);
+    function deleteTag(id:number, list:Tag[]) {
+        for(let i=0; i<list.length; i++) {
+            if(list[i].id == id) {
+                list.splice(i, 1)
+            }
+        }
+        Auth.setTags(list)
+        const tags = JSON.stringify(list)
+        AsyncStorage.setItem("tags", tags)
+        setDeleted(!deleted)
     }
+
+    function handleSelectTag(name:string) {
+        setChecked(name)
+        setChoosingTag(!choosingTag)
+    }
+
+    useEffect(() => {
+        setTags(Auth.tags)
+    }, [deleted])
 
     return(
         <Black>
@@ -202,7 +222,10 @@ export default function CreateNote(props:any) {
                                 color= '#FFCD92'
                                 uncheckedColor= '#99A3D266'
                                 status={ checked === "No tag" ? 'checked' : 'unchecked' }
-                                onPress={() => {setChecked("No tag"); setChoosingTag(!choosingTag)}}
+                                onPress={() => {
+                                    setChecked("No tag")
+                                    setChoosingTag(!choosingTag)
+                                }}
                             />
                             <Name>No tag</Name>
                         </RadioGroup>
@@ -216,15 +239,27 @@ export default function CreateNote(props:any) {
                                             color= '#FFCD92'
                                             uncheckedColor= '#99A3D266'
                                             status={ checked === tag.name ? 'checked' : 'unchecked' }
-                                            onPress={() => {handleSelectTag(tag.name);}}
+                                            onPress={() => { handleSelectTag(tag.name) }}
                                         />
                                         <Name>{tag.name}</Name>
+                                        <Icon 
+                                            name="close-outline" 
+                                            size={30} 
+                                            color="#F2F2F2"
+                                            onPress={() => { deleteTag(tag.id, tags) }}
+                                        />
                                     </RadioGroup>
                                 );
                             })
                         }
                     </ScrollView>
-                    <RadioGroup style={{alignSelf: 'flex-end', borderTopWidth: 1, borderTopColor: '#f2f2f218'}}>
+                    <RadioGroup 
+                        style={{
+                            alignSelf: 'flex-end', 
+                            borderTopWidth: 1, 
+                            borderTopColor: '#f2f2f218', 
+                            marginBottom: 5
+                        }}>
                         <Icon name="md-add" size={36} color="#F2F2F2" />
                         <Controller 
                             control={control}
@@ -233,8 +268,11 @@ export default function CreateNote(props:any) {
                                     placeholder="NEW TAG"
                                     maxLength={10}
                                     onBlur={onBlur}
-                                    onSubmitEditing={() => {setChoosingTag(false)}}
-                                    onChangeText={(value:any) => {setChecked(value); onChange(value)}}
+                                    onSubmitEditing={() => { setChoosingTag(false) }}
+                                    onChangeText={(value:any) => {
+                                        setChecked(value) 
+                                        onChange(value)
+                                    }}
                                     value={value}
                                 />
                             )}
