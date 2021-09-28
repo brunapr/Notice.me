@@ -36,17 +36,13 @@ export default function App() {
           }}
         >
           <Screen
-            name='Redirect'
-            component={Redirect}
-          /> 
+            name='Notes'
+            component={Notes}
+          />
           <Screen
             name='UserName'
             component={UserName}
           /> 
-          <Screen
-            name='Notes'
-            component={Notes}
-          />
           <Screen
             name='CreateNote'
             component={CreateNote}
