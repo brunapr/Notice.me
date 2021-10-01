@@ -10,7 +10,7 @@ Keep track of your plans with Notice.me! Create notes and organize them by addin
 
 ### 📜 Cloning and serving project
 Open your terminal and type:
-1. `$ git clone https://github.com/sunnyseth/Notice.me`
+1. `$ git clone https://github.com/brunapr/Notice.me`
 2. `$ cd Notice.me`
 3. `$ yarn`
 4. `$ yarn start` 
