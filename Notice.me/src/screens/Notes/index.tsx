@@ -43,7 +43,7 @@ export default function Notes() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    userName == "Guest" && navigation.navigate("UserName")
+    userName == "" && navigation.navigate("UserName")
   }, [])
 
   const list = Auth.notes;

@@ -7,7 +7,6 @@ import AuthProvider from './src/contexts/auth';
 
 import CreateNote from './src/screens/CreateNote';
 import Notes from './src/screens/Notes/index';
-import Redirect from './src/components/Redirect';
 import UserName from './src/screens/UserName';
 
 import { useFonts } from 'expo-font';
